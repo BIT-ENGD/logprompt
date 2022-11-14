@@ -11,7 +11,9 @@
             "program": "main.py",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["--model","xlnet-large-cased"]
+            "args": ["--model","xlnet-large-cased",
+            "--device","cpu"
+        ]
         }
     ]
 }

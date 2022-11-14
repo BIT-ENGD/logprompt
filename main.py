@@ -4,12 +4,32 @@ from model import *
 from util import *
 from tqdm import tqdm
 import os
+from torch.optim import AdamW
+from transformers import get_linear_schedule_with_warmup
+
+def transtodevice(args,batch):
+    data=dict()
+    data["ids"]=torch.tensor(batch["ids"]).to(args.device)
+    data["mask"]=torch.tensor(batch["mask"]).to(args.device)
+    data["label"]=torch.tensor(batch["label"]).to(args.device)
+    return data
 
 def inference(args,dataloader):
     config=args.config
+    model=args.model.to(args.device)
     #pbar = tqdm(dataloader,desc="fewshow-log")
+    no_decay = ['bias', 'LayerNorm.weight']
+    optimizer_grouped_parameters = [
+    {'params': [p for n, p in model.named_parameters() if not any(nd in n for nd in no_decay)], 'weight_decay': args.weight_decay},
+    {'params': [p for n, p in model.named_parameters() if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
+    ]
+    optimizer = AdamW(optimizer_grouped_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
+    scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=args.max_steps*args.warmup_steps, num_training_steps=args.max_steps)
+
     for epoch in range(args.epoch):
         for step,batch in enumerate(dataloader):
+            batch=transtodevice(args,batch)
+            loss=model(batch["ids"],batch["mask"],batch["label"])
             print("========epoch: %d, step: %d =batch==============="%(epoch,step))
 
 
@@ -34,10 +54,12 @@ def main():
     
     good=load_cache(positive)
     bad=load_cache(negative)
-    dataset=ds_fn(args,good,bad,int(args.shot/2))
+    template="It was <mask>."
+    args.template=template
+    dataset=ds_fn(args,good,bad,int(args.shot/2),template)
     loader=get_loader(args,dataset,batch_size)
  
- 
+
     inference(args,loader)
 
 
