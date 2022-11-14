@@ -8,9 +8,15 @@ class data_item(object):
   
 
 class LogDataset(Data.Dataset):
-    def __init__(self,data):
-   
-        self.data=data
+    def __init__(self,args,data):
+        self.data=list()
+        tokenizer=args.tokenizer
+        for item in data:
+            tp_value=""
+            for tp in item.value:
+                tp_value+=tp +tokenizer.sep_token
+            newitem=data_item(tp_value,item.label)
+            self.data.append(item)
 
     def __len__(self):
         return len(self.data)
@@ -22,11 +28,11 @@ class LogDataset(Data.Dataset):
 
 
 
-def load_dataset(good,bad,number):
+def load_dataset(args,good,bad,number):
 
     data=[data_item(item,0)  for item in good[:number] ]
     data.extend([data_item(item,1) for item in bad[:number] ])
-    dataset=LogDataset(data)
+    dataset=LogDataset(args,data)
 
     return dataset
 
