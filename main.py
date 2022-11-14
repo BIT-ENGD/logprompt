@@ -22,8 +22,8 @@ def main():
     ds_fn=dsinfo["ds_fn"]
     get_loader=dsinfo["loader"]
     batch_size=dsinfo["batch_size"]
-    negative=path=DATA_DIR+os.sep+dsinfo["dir"]+os.sep+dsinfo["negative"]
-    positive=path=DATA_DIR+os.sep+dsinfo["dir"]+os.sep+dsinfo["positive"]
+    negative=DATA_DIR+os.sep+dsinfo["dir"]+os.sep+dsinfo["negative"]
+    positive=DATA_DIR+os.sep+dsinfo["dir"]+os.sep+dsinfo["positive"]
     #     data=load_cache(path)
 
     good=load_cache(positive)
