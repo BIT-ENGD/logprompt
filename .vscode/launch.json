@@ -10,7 +10,13 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "justMyCode": true
+            "justMyCode": true,
+            "args": [
+                "--model","D:/transformers/xlnet-large-cased",
+
+
+                "--device","cpu"
+        ]
         }
     ]
 }
